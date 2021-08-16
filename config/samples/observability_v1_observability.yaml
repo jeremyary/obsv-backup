@@ -1,0 +1,28 @@
+apiVersion: observability.redhat.com/v1
+kind: Observability
+metadata:
+  name: observability-sample
+spec:
+  resyncPeriod: 30s
+  configurationSelector:
+    matchLabels:
+      configures: "observability-operator"
+  storage:
+    prometheus:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: ssd
+          resources:
+            requests:
+              storage: 40Gi
+  tolerations:
+    - effect: NoSchedule
+      key: node-role.kubernetes.io/infra
+      operator: Exists
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/infra
+                operator: Exists
